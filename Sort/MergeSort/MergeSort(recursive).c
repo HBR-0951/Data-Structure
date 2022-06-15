@@ -9,12 +9,12 @@
 int *list, length;
 
 void RandomList();
-void SelectSort();
+void MergeSort();
 
 int main()
 {
     RandomList();
-    SelectSort();
+    MergeSort();
 }
 void RandomList()
 {
@@ -29,32 +29,15 @@ void RandomList()
     {
         list[i] = (rand() % numSize) + 1;
     }
-    
+
     printf("Before sort:\n");
     for (int i = 0; i < length; i++)
     {
         printf("%d ", list[i]);
     }
+
 }
-void SelectSort()
-{
 
-    for (int i = 0; i < length; i++)
-    {
-        for (int j = i + 1; j < length; j++)
-        {
-            if (list[i] > list[j])
-            {
-                int temp = list[i];
-                list[i] = list[j];
-                list[j] = temp;
-            }
-        }
-    }
+void MergeSort(){
 
-    printf("\nAfter sort:\n");
-    for (int i = 0; i < length; i++)
-    {
-        printf("%d ", list[i]);
-    }
 }
