@@ -15,7 +15,8 @@ void MultiArray();
 int main()
 {
     RandomTwoArray(); // get two array: array_A, array_B
-    MultiArray();
+    MultiArray();     // return array_C for (array_A * array_B)
+
     printf("\nAfter Multi (%d * %d)\n", size_a1, size_b2);
     for (int i = 0; i < size_a1; i++)
     {
@@ -39,13 +40,30 @@ void RandomTwoArray()
     array_A = malloc(size_a1 * sizeof(int *));
     array_B = malloc(size_b1 * sizeof(int *));
 
-    printf("Before Multi:\n\nArray_A (%d * %d):\n", size_a1, size_a2);
     for (int i = 0; i < size_a1; i++)
     {
         array_A[i] = malloc(size_a2 * sizeof(int));
         for (int j = 0; j < size_a2; j++)
         {
             array_A[i][j] = (rand() % num_SIZE) + 1;
+        }
+    }
+
+    for (int i = 0; i < size_b1; i++)
+    {
+        array_B[i] = malloc(size_b2 * sizeof(int));
+        for (int j = 0; j < size_b2; j++)
+        {
+            array_B[i][j] = (rand() % num_SIZE) + 1;
+        }
+    }
+
+    // print array_A, array_B
+    printf("Before Multi:\n\nArray_A (%d * %d):\n", size_a1, size_a2);
+    for (int i = 0; i < size_a1; i++)
+    {
+        for (int j = 0; j < size_a2; j++)
+        {
             printf("%d ", array_A[i][j]);
         }
         printf("\n");
@@ -53,10 +71,8 @@ void RandomTwoArray()
     printf("\nArray_B(%d * %d):\n", size_b1, size_b2);
     for (int i = 0; i < size_b1; i++)
     {
-        array_B[i] = malloc(size_b2 * sizeof(int));
         for (int j = 0; j < size_b2; j++)
         {
-            array_B[i][j] = (rand() % num_SIZE) + 1;
             printf("%d ", array_B[i][j]);
         }
         printf("\n");
