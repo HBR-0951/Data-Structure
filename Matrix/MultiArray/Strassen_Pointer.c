@@ -2,7 +2,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define Threshold 128
 _Bool N_check(int N)
 {
     for (int i = 1; i <= N; i *= 2)
@@ -43,33 +42,50 @@ int choose_max(int m1, int n1, int m2, int n2)
     }
     return max;
 }
-int **matrix_mult(int N, int **A, int **B, int **C)
+int **matrix_mult(int N, int **A, int **B)
 {
+    int **C = malloc(N * sizeof(int *));
     for (int i = 0; i < N; i++)
     {
+        C[i] = malloc(N * sizeof(int));
         for (int j = 0; j < N; j++)
         {
             C[i][j] = 0;
         }
     }
-    for (int i = 0; i < N; i++)
-    {
-        for (int k = 0; k < N; k++)
-        {
-            if (A[i][k] != 0)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    C[i][j] += A[i][k] * B[k][j];
-                }
-            }
-        }
-    }
+    int a11, a12, a21, a22, b11, b12, b21, b22;
+    a11 = A[0][0];
+    a12 = A[0][1];
+    a21 = A[1][0];
+    a22 = A[1][1];
+    b11 = B[0][0];
+    b12 = B[0][1];
+    b21 = B[1][0];
+    b22 = B[1][1];
+
+    int m1, m2, m3, m4, m5, m6, m7;
+    m1 = (a11 + a22) * (b11 + b22);
+    m2 = (a21 + a22) * b11;
+    m3 = a11 * (b12 - b22);
+    m4 = a22 * (b21 - b11);
+    m5 = (a11 + a12) * b22;
+    m6 = (a21 - a11) * (b11 + b12);
+    m7 = (a12 - a22) * (b21 + b22);
+
+    C[0][0] = (m1 + m4 - m5 + m7);
+    C[0][1] = (m3 + m5);
+    C[1][0] = (m2 + m4);
+    C[1][1] = (m1 + m3 - m2 + m6);
 
     return C;
 }
-int **matrix_plus(int N, int **A, int **B, int **C)
+int **matrix_plus(int N, int **A, int **B)
 {
+    int **C = malloc(N * sizeof(int *));
+    for (int i = 0; i < N; i++)
+    {
+        C[i] = malloc(N * sizeof(int));
+    }
 
     for (int i = 0; i < N; i++)
     {
@@ -80,8 +96,13 @@ int **matrix_plus(int N, int **A, int **B, int **C)
     }
     return C;
 }
-int **matrix_minus(int N, int **A, int **B, int **C)
+int **matrix_minus(int N, int **A, int **B)
 {
+    int **C = malloc(N * sizeof(int *));
+    for (int i = 0; i < N; i++)
+    {
+        C[i] = malloc(N * sizeof(int));
+    }
 
     for (int i = 0; i < N; i++)
     {
@@ -92,119 +113,131 @@ int **matrix_minus(int N, int **A, int **B, int **C)
     }
     return C;
 }
-int **strassen(int N, int **A, int **B, int **C)
+int **strassen(int N, int **A, int **B)
 {
-    if (N <= Threshold)
+    int **C = malloc(N * sizeof(int *));
+    for (int i = 0; i < N; i++)
     {
-        C = matrix_mult(N, A, B, C);
+        C[i] = malloc(N * sizeof(int));
+    }
+    if (N <= 2)
+    {
+        C = matrix_mult(N, A, B);
         return C;
     }
     else
     {
-        int n2 = N / 2;
-        int **a11 = malloc((n2) * sizeof(int *));
-        int **a12 = malloc((n2) * sizeof(int *));
-        int **a21 = malloc((n2) * sizeof(int *));
-        int **a22 = malloc((n2) * sizeof(int *));
+        int **a11 = malloc((N / 2) * sizeof(int *));
+        int **a12 = malloc((N / 2) * sizeof(int *));
+        int **a21 = malloc((N / 2) * sizeof(int *));
+        int **a22 = malloc((N / 2) * sizeof(int *));
 
-        int **b11 = malloc((n2) * sizeof(int *));
-        int **b12 = malloc((n2) * sizeof(int *));
-        int **b21 = malloc((n2) * sizeof(int *));
-        int **b22 = malloc((n2) * sizeof(int *));
+        int **b11 = malloc((N / 2) * sizeof(int *));
+        int **b12 = malloc((N / 2) * sizeof(int *));
+        int **b21 = malloc((N / 2) * sizeof(int *));
+        int **b22 = malloc((N / 2) * sizeof(int *));
 
-        int **atr = malloc((n2) * sizeof(int *));
-        int **btr = malloc((n2) * sizeof(int *));
-
-        int **m1 = malloc((n2) * sizeof(int *));
-        int **m2 = malloc((n2) * sizeof(int *));
-        int **m3 = malloc((n2) * sizeof(int *));
-        int **m4 = malloc((n2) * sizeof(int *));
-        int **m5 = malloc((n2) * sizeof(int *));
-        int **m6 = malloc((n2) * sizeof(int *));
-        int **m7 = malloc((n2) * sizeof(int *));
-
-        int **c11 = malloc((n2) * sizeof(int *));
-        int **c12 = malloc((n2) * sizeof(int *));
-        int **c21 = malloc((n2) * sizeof(int *));
-        int **c22 = malloc((n2) * sizeof(int *));
-
-        for (int i = 0; i < n2; i++)
+        for (int i = 0; i < N / 2; i++)
         {
-            a11[i] = malloc((n2) * sizeof(int));
-            a12[i] = malloc((n2) * sizeof(int));
-            a21[i] = malloc((n2) * sizeof(int));
-            a22[i] = malloc((n2) * sizeof(int));
-            b11[i] = malloc((n2) * sizeof(int));
-            b12[i] = malloc((n2) * sizeof(int));
-            b21[i] = malloc((n2) * sizeof(int));
-            b22[i] = malloc((n2) * sizeof(int));
-            atr[i] = malloc((n2) * sizeof(int));
-            btr[i] = malloc((n2) * sizeof(int));
-            m1[i] = malloc((n2) * sizeof(int));
-            m2[i] = malloc((n2) * sizeof(int));
-            m3[i] = malloc((n2) * sizeof(int));
-            m4[i] = malloc((n2) * sizeof(int));
-            m5[i] = malloc((n2) * sizeof(int));
-            m6[i] = malloc((n2) * sizeof(int));
-            m7[i] = malloc((n2) * sizeof(int));
-            c11[i] = malloc((n2) * sizeof(int));
-            c12[i] = malloc((n2) * sizeof(int));
-            c21[i] = malloc((n2) * sizeof(int));
-            c22[i] = malloc((n2) * sizeof(int));
+            a11[i] = malloc((N / 2) * sizeof(int));
+            a12[i] = malloc((N / 2) * sizeof(int));
+            a21[i] = malloc((N / 2) * sizeof(int));
+            a22[i] = malloc((N / 2) * sizeof(int));
+            b11[i] = malloc((N / 2) * sizeof(int));
+            b12[i] = malloc((N / 2) * sizeof(int));
+            b21[i] = malloc((N / 2) * sizeof(int));
+            b22[i] = malloc((N / 2) * sizeof(int));
         }
 
         // 分配 a11,a12,a21,a22 ; b11,b12,b21,b22
-        for (int i = 0; i < n2; i++)
+        for (int i = 0; i < N / 2; i++)
         {
-            for (int j = 0; j < n2; j++)
+            for (int j = 0; j < N / 2; j++)
             {
                 a11[i][j] = A[i][j];
                 b11[i][j] = B[i][j];
             }
         }
-        for (int i = 0; i < n2; i++)
+        for (int i = 0; i < N / 2; i++)
         {
-            for (int j = (n2), k = 0; j < N; j++, k++)
+            for (int j = (N / 2), k = 0; j < N; j++, k++)
             {
                 a12[i][k] = A[i][j];
                 b12[i][k] = B[i][j];
             }
         }
-        for (int i = (n2), k = 0; i < N; i++, k++)
+        for (int i = (N / 2), k = 0; i < N; i++, k++)
         {
-            for (int j = 0; j < n2; j++)
+            for (int j = 0; j < N / 2; j++)
             {
                 a21[k][j] = A[i][j];
                 b21[k][j] = B[i][j];
             }
         }
-        for (int i = (n2), k = 0; i < N; i++, k++)
+        for (int i = (N / 2), k = 0; i < N; i++, k++)
         {
-            for (int j = (n2), q = 0; j < N; j++, q++)
+            for (int j = (N / 2), q = 0; j < N; j++, q++)
             {
                 a22[k][q] = A[i][j];
                 b22[k][q] = B[i][j];
             }
         }
         // m1~m7
-        strassen(n2, matrix_plus(n2, a11, a22, atr),
-                 matrix_plus(n2, b11, b22, btr), m1);
-        strassen(n2, matrix_plus(n2, a21, a22, atr), b11, m2);
-        strassen(n2, a11, matrix_minus(n2, b12, b22, atr), m3);
-        strassen(n2, a22, matrix_minus(n2, b21, b11, atr), m4);
-        strassen(n2, matrix_plus(n2, a11, a12, atr), b22, m5);
-        strassen(n2, matrix_minus(n2, a21, a11, atr),
-                 matrix_plus(n2, b11, b12, btr), m6);
-        strassen(n2, matrix_minus(n2, a12, a22, atr),
-                 matrix_plus(n2, b21, b22, btr), m7);
+        int **m1 = strassen(N / 2, matrix_plus(N / 2, a11, a22),
+                            matrix_plus(N / 2, b11, b22));
+        int **m2 = strassen(N / 2, matrix_plus(N / 2, a21, a22), b11);
+        int **m3 = strassen(N / 2, a11, matrix_minus(N / 2, b12, b22));
+        int **m4 = strassen(N / 2, a22, matrix_minus(N / 2, b21, b11));
+        int **m5 = strassen(N / 2, matrix_plus(N / 2, a11, a12), b22);
+        int **m6 = strassen(N / 2, matrix_minus(N / 2, a21, a11),
+                            matrix_plus(N / 2, b11, b12));
+        int **m7 = strassen(N / 2, matrix_minus(N / 2, a12, a22),
+                            matrix_plus(N / 2, b21, b22));
 
+        for (int i = 0; i < N / 2; i++)
+        {
+            free(a11[i]);
+            free(a12[i]);
+            free(a21[i]);
+            free(a22[i]);
+            free(b11[i]);
+            free(b12[i]);
+            free(b21[i]);
+            free(b22[i]);
+        }
+        free(a11);
+        free(a12);
+        free(a21);
+        free(a22);
+        free(b11);
+        free(b12);
+        free(b21);
+        free(b22);
         // c11,c12,c21,c22
-        matrix_minus(n2, matrix_plus(n2, m1, m4, atr),
-                     matrix_minus(n2, m5, m7, btr), c11);
-        matrix_plus(n2, m3, m5, c12);
-        matrix_plus(n2, m2, m4, c21);
-        matrix_minus(n2, matrix_plus(n2, m1, m3, atr),
-                     matrix_minus(n2, m2, m6, btr), c22);
+        int **c11 = matrix_minus(N / 2, matrix_plus(N / 2, m1, m4),
+                                 matrix_minus(N / 2, m5, m7));
+        int **c12 = matrix_plus(N / 2, m3, m5);
+        int **c21 = matrix_plus(N / 2, m2, m4);
+        int **c22 = matrix_minus(N / 2, matrix_plus(N / 2, m1, m3),
+                                 matrix_minus(N / 2, m2, m6));
+
+        for (int i = 0; i < N / 2; i++)
+        {
+            free(m1[i]);
+            free(m2[i]);
+            free(m3[i]);
+            free(m4[i]);
+            free(m5[i]);
+            free(m6[i]);
+            free(m7[i]);
+        }
+        free(m1);
+        free(m2);
+        free(m3);
+        free(m4);
+        free(m5);
+        free(m6);
+        free(m7);
 
         for (int i = 0; i < N / 2; i++)
         {
@@ -234,52 +267,7 @@ int **strassen(int N, int **A, int **B, int **C)
                 C[i][j] = c22[k][q];
             }
         }
-        for (int i = 0; i < n2; i++)
-        {
-            free(a11[i]);
 
-            free(a12[i]);
-            free(a21[i]);
-            free(a22[i]);
-            free(b11[i]);
-            free(b12[i]);
-            free(b21[i]);
-            free(b22[i]);
-            free(m1[i]);
-            free(m2[i]);
-            free(m3[i]);
-            free(m4[i]);
-            free(m5[i]);
-            free(m6[i]);
-            free(m7[i]);
-            free(c11[i]);
-            free(c12[i]);
-            free(c21[i]);
-            free(c22[i]);
-            free(atr[i]);
-            free(btr[i]);
-        }
-        free(a11);
-        free(a12);
-        free(a21);
-        free(a22);
-        free(b11);
-        free(b12);
-        free(b21);
-        free(b22);
-        free(m1);
-        free(m2);
-        free(m3);
-        free(m4);
-        free(m5);
-        free(m6);
-        free(m7);
-        free(c11);
-        free(c12);
-        free(c21);
-        free(c22);
-        free(atr);
-        free(btr);
         return C;
     }
 }
@@ -354,13 +342,14 @@ int main()
         free(a);
         free(b);
 
-        int **C = malloc(N * sizeof(int *));
+        int **C;
+
+        C = strassen(N, A, B);
         for (int i = 0; i < N; i++)
         {
-            C[i] = malloc(N * sizeof(int));
+            free(A[i]);
+            free(B[i]);
         }
-        C = strassen(N, A, B, C);
-
         free(A);
         free(B);
 
@@ -443,16 +432,16 @@ int main()
         free(a);
         free(b);
 
-        int **C = malloc(N * sizeof(int *));
+        int **C;
+
+        C = strassen(N, A, B);
         for (int i = 0; i < N; i++)
         {
-            C[i] = malloc(N * sizeof(int));
+            free(A[i]);
+            free(B[i]);
         }
-        C = strassen(N, A, B, C);
-
         free(A);
         free(B);
-
         free(C);
 
         end = clock();
