@@ -9,12 +9,12 @@
 int *list, length;
 
 void RandomList();
-void GnomeSort(); // improve BubbleSort
+void ShellSort(); // improve InsertionSort
 
 int main()
 {
     RandomList();
-    GnomeSort();
+    ShellSort();
     printf("\nAfter sort:\n");
     for (int i = 0; i < length; i++)
     {
@@ -43,28 +43,21 @@ void RandomList()
     printf("\n");
 }
 
-void GnomeSort()
-{
-    int index = 0;
+void ShellSort(){
+    int gap = length / 2;
 
-    while (index < length)
-    {
-        if (index == 0)
-        {
-            index++;
-        }
-        else if (list[index] >= list[index - 1])
-        {
-            index++;
-        }
-        // 假設當下list[index]值比較小，就跟前一個交換，並繼續往前比較，直到list[index]比前一個大
-        else
-        {
-            int temp = list[index];
-            list[index] = list[index - 1];
-            list[index - 1] = temp;
+    while(gap > 0){
 
-            index--;
+        for (int i = 0; i< length; i += gap){
+            int temp = list[i];
+            int j = i;
+
+            while(j >= gap && list[j - gap] > temp){
+                list[j] = list[j - gap];
+                j -= gap;
+            }
+            list[j] = temp;
         }
+            gap /= 2;
     }
 }
