@@ -1,2 +1,2 @@
-# Data-Structure
+# Data-Structure/lgorithm
 for practicing purpose.
